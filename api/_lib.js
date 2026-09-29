@@ -38,26 +38,24 @@ async function yahooChart(symbol, period1, period2, interval = '1d') {
 }
 
 // ---- 점수 저장소 ----
-const KV_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const KV_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-const KEY = 'stock-game:scores';
+// Vercel: Blob에 기록 1건당 파일 1개로 저장(동시에 저장해도 덮어쓰기 없음). 로컬: data/scores.json
+const USE_BLOB = !!process.env.BLOB_READ_WRITE_TOKEN;
 const FILE = path.join(__dirname, '..', 'data', 'scores.json');
 
-async function kv(cmd) {
-  const res = await fetch(KV_URL, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${KV_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify(cmd),
-  });
-  const j = await res.json();
-  if (j.error) throw new Error(j.error);
-  return j.result;
-}
-
 async function loadScores() {
-  if (KV_URL && KV_TOKEN) {
-    const list = await kv(['LRANGE', KEY, 0, -1]);
-    return list.map((s) => JSON.parse(s));
+  if (USE_BLOB) {
+    const { list } = require('@vercel/blob');
+    const blobs = [];
+    let cursor;
+    do {
+      const page = await list({ prefix: 'scores/', cursor });
+      blobs.push(...page.blobs);
+      cursor = page.hasMore ? page.cursor : undefined;
+    } while (cursor);
+    const all = await Promise.all(
+      blobs.map((b) => fetch(b.url).then((r) => r.json()).catch(() => null))
+    );
+    return all.filter(Boolean);
   }
   try {
     return JSON.parse(fs.readFileSync(FILE, 'utf8'));
@@ -67,8 +65,13 @@ async function loadScores() {
 }
 
 async function addScore(entry) {
-  if (KV_URL && KV_TOKEN) {
-    await kv(['RPUSH', KEY, JSON.stringify(entry)]);
+  if (USE_BLOB) {
+    const { put } = require('@vercel/blob');
+    await put(`scores/${entry.id}.json`, JSON.stringify(entry), {
+      access: 'public',
+      contentType: 'application/json',
+      addRandomSuffix: false,
+    });
     return;
   }
   const list = await loadScores();
