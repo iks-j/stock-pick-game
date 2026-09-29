@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>최고의 주식 찍기 고수를 찾아라</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <!-- 시작 화면 -->
+    <section id="screen-start" class="screen">
+      <h1>📈 최고의 주식 찍기 고수를 찾아라</h1>
+      <p class="sub">과거의 어느 날, 그날 오른 종목을 찍어라!</p>
+      <ol class="rules">
+        <li>한국(코스피·코스닥)과 미국 증시가 <b>모두 열렸던 과거 날짜</b>가 주어져요.</li>
+        <li>그날 상장돼 있던 <b>회사 종목명</b>을 하나 답하세요. (한글·영문·티커 모두 OK)</li>
+        <li>총 <b>10라운드</b>, 각 종목의 그날 일간 등락률이 <b>복리</b>로 이어져요.<br>
+            $1로 시작해 +10%면 다음엔 $1.1로 시작!</li>
+        <li>최종 수익률을 확인하고 <b>이름을 남겨</b> 랭킹에 도전하세요.</li>
+      </ol>
+      <button id="btn-start" class="primary big" disabled>게임 시작</button>
+      <p id="start-msg" class="hint"></p>
+
+      <h2>🏆 명예의 전당 <small id="lb-count"></small></h2>
+      <div id="leaderboard" class="lb"><p class="hint">불러오는 중…</p></div>
+    </section>
+
+    <!-- 게임 화면 -->
+    <section id="screen-game" class="screen hidden">
+      <div class="topbar">
+        <span id="round-label">1 / 10</span>
+        <div class="bar"><div id="bar-fill"></div></div>
+        <span id="balance-label">$1.00</span>
+      </div>
+
+      <div class="datecard">
+        <div class="hint">오늘의 날짜</div>
+        <div id="date-big">2020-03-16</div>
+        <div id="date-week" class="hint">월요일</div>
+        <div class="hint">🇰🇷 코스피·코스닥 / 🇺🇸 미국 증시 모두 개장</div>
+      </div>
+
+      <div id="pick-box">
+        <label for="stock-input">이날 오를 것 같은 종목은?</label>
+        <div class="ac">
+          <input id="stock-input" type="text" autocomplete="off" placeholder="예) 삼성전자, 엔비디아, TSLA">
+          <ul id="ac-list" class="hidden"></ul>
+        </div>
+        <button id="btn-confirm" class="primary" disabled>이 종목으로 확정</button>
+        <p id="pick-msg" class="hint"></p>
+      </div>
+
+      <div id="result-box" class="hidden">
+        <div class="result-card">
+          <div id="res-name" class="res-name"></div>
+          <div id="res-ret" class="res-ret"></div>
+          <div id="res-price" class="hint"></div>
+          <div class="res-bal">내 자산 <span id="res-from"></span> → <b id="res-to"></b></div>
+        </div>
+        <button id="btn-next" class="primary">다음 날짜 →</button>
+      </div>
+    </section>
+
+    <!-- 결과 화면 -->
+    <section id="screen-final" class="screen hidden">
+      <h1>🎉 최종 결과</h1>
+      <div class="final-card">
+        <div class="hint">$1로 시작해 10일 복리 투자한 결과</div>
+        <div id="final-usd">$1.00</div>
+        <div id="final-pct">+0.00%</div>
+      </div>
+      <div id="final-picks" class="picks"></div>
+
+      <form id="save-form">
+        <label for="name-input">이름을 남겨 랭킹에 도전하세요</label>
+        <input id="name-input" type="text" maxlength="20" placeholder="이름 (최대 20자)" required>
+        <button class="primary" type="submit">기록 저장하고 랭킹 보기</button>
+        <p id="save-msg" class="hint"></p>
+      </form>
+      <button id="btn-skip" class="link">저장하지 않고 처음으로</button>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

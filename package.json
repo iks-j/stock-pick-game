@@ -1,0 +1,12 @@
+{
+  "name": "stock-pick-game",
+  "version": "1.0.0",
+  "private": true,
+  "description": "최고의 주식 찍기 고수를 찾아라",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
