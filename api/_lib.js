@@ -5,10 +5,10 @@ const path = require('path');
 const HEADERS = { 'User-Agent': 'Mozilla/5.0' };
 
 // 일봉 조회. 거래소 현지 날짜(YYYY-MM-DD) 기준 rows 반환
-async function yahooChart(symbol, period1, period2) {
+async function yahooChart(symbol, period1, period2, interval = '1d') {
   const url =
     `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
-    `?period1=${period1}&period2=${period2}&interval=1d&events=div,splits`;
+    `?period1=${period1}&period2=${period2}&interval=${interval}&events=div,splits`;
   const res = await fetch(url, { headers: HEADERS });
   if (!res.ok) {
     const err = new Error('시세 조회 실패');

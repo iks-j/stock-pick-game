@@ -105,6 +105,7 @@
     $('stock-input').value = '';
     $('stock-input').disabled = false;
     setMsg('');
+    $('hint-box').classList.add('hidden');
     chosen = null;
     $('btn-confirm').disabled = true;
     hideList();
@@ -209,6 +210,25 @@
     }
   }
   $('btn-confirm').addEventListener('click', confirmPick);
+
+  $('btn-hint').addEventListener('click', async () => {
+    const box = $('hint-box');
+    const date = game.dates[game.round];
+    box.classList.remove('hidden');
+    box.innerHTML = '<p class="hint">힌트를 불러오는 중…</p>';
+    try {
+      const { lines } = await api('/api/hint?date=' + date);
+      if (game.dates[game.round] !== date) return;
+      box.innerHTML = '';
+      lines.forEach((t) => {
+        const p = document.createElement('p');
+        p.textContent = t;
+        box.appendChild(p);
+      });
+    } catch (e) {
+      box.innerHTML = '<p class="hint">힌트를 불러오지 못했어요. 다시 눌러주세요.</p>';
+    }
+  });
 
   $('btn-next').addEventListener('click', () => {
     game.round++;
